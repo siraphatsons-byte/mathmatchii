@@ -1,0 +1,2114 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MathMatch 🤍</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --pink: #f43f85;
+  --pink-dark: #db2777;
+  --purple: #8b5cf6;
+  --blue: #6366f1;
+  --green: #10b981;
+  --dark: #273044;
+  --muted: #78849b;
+  --bg: #fff7fb;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--dark);
+  background:
+    radial-gradient(circle at top left, #ffe0ef, transparent 36%),
+    radial-gradient(circle at top right, #e9e2ff, transparent 35%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+header {
+  background: rgba(255,255,255,.86);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid #ffe1ee;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.header-inner {
+  max-width: 1150px;
+  margin: auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--pink), var(--purple));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+nav {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 13px;
+  background: #f6f0f8;
+  color: #61546a;
+  font-weight: 700;
+}
+
+.nav-btn.active {
+  color: white;
+  background: linear-gradient(120deg, var(--pink), var(--purple));
+}
+
+main {
+  max-width: 1150px;
+  margin: 25px auto;
+  padding: 0 18px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+  animation: fadeIn .35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 30px;
+  margin: 0 0 8px;
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 21px;
+}
+
+h3 {
+  margin: 0 0 10px;
+}
+
+p {
+  line-height: 1.65;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.panel {
+  background: white;
+  border: 1px solid #f3e5ed;
+  border-radius: 22px;
+  padding: 23px;
+  box-shadow: 0 8px 30px #9f668b10;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.field select,
+.field input[type=number] {
+  width: 100%;
+  border: 1px solid #e5dce6;
+  border-radius: 12px;
+  padding: 11px;
+  background: #fff;
+  outline-color: var(--pink);
+}
+
+.question {
+  background: #fdf8fc;
+  border: 1px solid #f4e6ef;
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 12px;
+}
+
+.question-title {
+  font-weight: 750;
+  margin-bottom: 12px;
+}
+
+.question-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: var(--pink);
+}
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.preset-btn {
+  border: 1px solid #f5cddd;
+  border-radius: 999px;
+  background: #fff5fa;
+  padding: 9px 13px;
+  color: #b83272;
+  font-weight: 700;
+}
+
+.preset-btn:hover {
+  background: #ffe2ee;
+}
+
+.checkbox-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.primary-btn {
+  background: linear-gradient(120deg, var(--pink), var(--purple));
+  border: none;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 13px;
+  font-weight: 800;
+  box-shadow: 0 6px 18px #f43f8540;
+}
+
+.secondary-btn {
+  border: 1px solid #eed7e5;
+  background: #fff;
+  padding: 11px 15px;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #bd3676;
+}
+
+.full {
+  width: 100%;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stat {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  background: white;
+  border: 1px solid #f5e2ed;
+  border-radius: 16px;
+  padding: 15px;
+}
+
+.stat strong {
+  display: block;
+  color: var(--pink);
+  font-size: 24px;
+}
+
+.swipe-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.deck {
+  position: relative;
+  height: 565px;
+  max-width: 440px;
+  margin: auto;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+.profile-card {
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px #70405a25;
+  border: 1px solid #f4dbe8;
+  user-select: none;
+  cursor: grab;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.profile-card.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+.card-art {
+  height: 300px;
+  background: linear-gradient(135deg, #ffd5e9, #dcd0ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 110px;
+  position: relative;
+}
+
+.card-art.male {
+  background: linear-gradient(135deg, #c7e9ff, #e3d9ff);
+}
+
+.score-bubble {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: white;
+  padding: 9px 13px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--pink);
+  box-shadow: 0 4px 15px #00000010;
+}
+
+.swipe-stamp {
+  position: absolute;
+  top: 75px;
+  left: 20px;
+  border: 5px solid var(--green);
+  border-radius: 12px;
+  color: var(--green);
+  padding: 7px 14px;
+  font-size: 35px;
+  font-weight: 900;
+  transform: rotate(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.swipe-stamp.nope {
+  left: auto;
+  right: 20px;
+  color: #ef4444;
+  border-color: #ef4444;
+  transform: rotate(18deg);
+}
+
+.card-body {
+  padding: 19px;
+}
+
+.card-body h2 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  display: inline-block;
+  background: #f7eef6;
+  color: #8b5680;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  margin: 3px;
+}
+
+.compatibility-bar {
+  height: 9px;
+  background: #f1e6ee;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.compatibility-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), var(--purple));
+  border-radius: 999px;
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.action-btn {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 6px 22px #00000013;
+  font-size: 29px;
+  transition: transform .2s;
+}
+
+.action-btn:hover {
+  transform: scale(1.12);
+}
+
+.action-btn.nope {
+  color: #ef4444;
+}
+
+.action-btn.like {
+  color: var(--pink);
+}
+
+.action-btn.info {
+  color: var(--blue);
+}
+
+.info-panel {
+  min-height: 300px;
+}
+
+.suggestion {
+  background: linear-gradient(135deg, #fff0f7, #f2efff);
+  padding: 17px;
+  border-radius: 16px;
+  border: 1px solid #f3d9eb;
+  margin: 15px 0;
+}
+
+.suggestion strong {
+  color: #bf2f78;
+}
+
+.formula {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  background: #f7f6fa;
+  border-radius: 10px;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.math-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 14px 0;
+}
+
+.math-table th,
+.math-table td {
+  border-bottom: 1px solid #e8e5ed;
+  padding: 9px 5px;
+  text-align: center;
+}
+
+.math-table th {
+  background: #fff0f7;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.list-card {
+  background: white;
+  border: 1px solid #f2dfeb;
+  border-radius: 17px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.list-card-top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #fce8f2;
+  font-size: 31px;
+  flex-shrink: 0;
+}
+
+.avatar.male {
+  background: #e8efff;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #241a2d99;
+  padding: 18px;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 24px;
+  width: min(700px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  border: none;
+  background: none;
+  font-size: 28px;
+  color: #9c8295;
+}
+
+.match-modal {
+  text-align: center;
+  background: linear-gradient(150deg, #ffecf5, #f1eaff);
+}
+
+.match-title {
+  font-size: 37px;
+  color: var(--pink);
+  font-weight: 900;
+  animation: pop .5s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(.4); opacity: 0; }
+  75% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.match-faces {
+  font-size: 85px;
+  margin: 22px 0;
+}
+
+.toast {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #30283b;
+  color: white;
+  border-radius: 999px;
+  padding: 12px 20px;
+  opacity: 0;
+  transition: .3s;
+  z-index: 200;
+  text-align: center;
+  max-width: 90vw;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .swipe-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .info-panel {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .grid, .question-sliders {
+    grid-template-columns: 1fr;
+  }
+
+  .header-inner {
+    flex-direction: column;
+  }
+
+  .logo {
+    font-size: 22px;
+  }
+
+  .nav-btn {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .deck {
+    height: 550px;
+  }
+
+  .card-art {
+    height: 275px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="logo">MathMatch 💗</div>
+      <div class="subtitle">Find your match with mathematics</div>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" data-page="setup" onclick="showPage('setup')">⚙️ ตั้งค่า</button>
+      <button class="nav-btn" data-page="discover" onclick="showPage('discover')">💘 ค้นหาคู่</button>
+      <button class="nav-btn" data-page="likes" onclick="showPage('likes')">❤️ ถูกใจ</button>
+      <button class="nav-btn" data-page="matches" onclick="showPage('matches')">💕 Matches</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section id="setup" class="page active">
+
+  <h1>ค้นหาคนที่ใช่ด้วยคณิตศาสตร์ ✨</h1>
+  <p class="muted">ตอบแบบสอบถาม แล้วให้เวกเตอร์และระยะทางทางคณิตศาสตร์ช่วยแนะนำคู่ที่เหมาะกับคุณ</p>
+
+  <div class="panel">
+    <h2>👤 1. ข้อมูลและเงื่อนไขของคุณ</h2>
+
+    <div class="grid">
+
+      <div class="field">
+        <label>เพศของคุณ</label>
+        <select id="userGender">
+          <option value="หญิง">หญิง</option>
+          <option value="ชาย">ชาย</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>อายุของคุณ</label>
+        <input id="userAge" type="number" min="18" max="80" value="22">
+      </div>
+
+      <div class="field">
+        <label>อาชีพของคุณ</label>
+        <select id="ownJob"></select>
+      </div>
+
+      <div class="field">
+        <label>เพศที่สนใจ</label>
+        <select id="targetGender">
+          <option value="ชาย">ชาย</option>
+          <option value="หญิง">หญิง</option>
+          <option value="ทั้งหมด">ทุกเพศในฐานข้อมูล</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>อายุห่างกันไม่เกิน (ปี)</label>
+        <input id="ageDiff" type="number" min="0" max="30" value="8">
+      </div>
+
+      <div class="field">
+        <label>ระยะทางไม่เกิน</label>
+        <select id="maxDistance">
+          <option value="999">ไม่จำกัด</option>
+          <option value="5">5 กม.</option>
+          <option value="15" selected>15 กม.</option>
+          <option value="30">30 กม.</option>
+          <option value="50">50 กม.</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>อาชีพที่สนใจ</label>
+        <select id="targetJob"></select>
+      </div>
+
+      <div class="field">
+        <label>เป้าหมายความสัมพันธ์</label>
+        <select id="userGoal">
+          <option value="ทั้งหมด">เปิดรับทุกแบบ</option>
+          <option value="หาคู่ชีวิต">หาคู่ชีวิต</option>
+          <option value="คุยศึกษานิสัย">คุยศึกษานิสัย</option>
+          <option value="เพื่อนเที่ยว/เพื่อนคุย">เพื่อนเที่ยว / เพื่อนคุย</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <h2>🧠 2. แบบสอบถามไลฟ์สไตล์</h2>
+    <p class="muted">ให้คะแนนแต่ละหัวข้อ 1–5 และเลือกว่าหัวข้อนั้นสำคัญกับคุณมากแค่ไหน</p>
+
+    <div class="preset-row">
+      <button class="preset-btn" onclick="applyPreset([5,4,1,3,2],[5,3,2,2,1])">🎉 สายปาร์ตี้</button>
+      <button class="preset-btn" onclick="applyPreset([1,2,5,5,3],[2,2,5,5,2])">💼 สายทำงาน</button>
+      <button class="preset-btn" onclick="applyPreset([2,4,3,3,5],[2,3,2,2,5])">🏃 สายสุขภาพ</button>
+      <button class="preset-btn" onclick="applyPreset([3,3,3,3,3],[3,3,3,3,3])">🔄 สมดุล</button>
+    </div>
+
+    <div id="questions"></div>
+
+    <label class="checkbox-row">
+      <input id="useWeights" type="checkbox" checked>
+      ใช้ Weighted Euclidean Distance (คำนึงถึงน้ำหนักความสำคัญ)
+    </label>
+
+    <label class="checkbox-row">
+      <input id="dealbreaker" type="checkbox">
+      เปิด Dealbreaker (ถ้าหัวข้อสำคัญระดับ 5 ต่างกันเกิน 2 คะแนน จะไม่แนะนำ)
+    </label>
+
+    <button class="primary-btn full" onclick="startMatching()">
+      💘 เริ่มค้นหาคู่ที่เหมาะกับฉัน
+    </button>
+
+  </div>
+</section>
+
+<section id="discover" class="page">
+
+  <h1>Discover 💕</h1>
+  <p class="muted">ปัดขวาเพื่อกดถูกใจ ปัดซ้ายเพื่อข้าม หรือกดปุ่มด้านล่าง</p>
+
+  <div class="stats">
+    <div class="stat"><strong id="countCandidates">0</strong>โปรไฟล์ที่ตรงเงื่อนไข</div>
+    <div class="stat"><strong id="countLikes">0</strong>ถูกใจ</div>
+    <div class="stat"><strong id="countMatches">0</strong>Matches</div>
+  </div>
+
+  <div class="swipe-layout">
+
+    <div>
+      <div class="deck" id="deck"></div>
+
+      <div class="action-row">
+        <button class="action-btn nope" onclick="swipe('left')" title="ไม่สนใจ">✕</button>
+        <button class="action-btn info" onclick="openMath()" title="ดูวิธีคำนวณ">∑</button>
+        <button class="action-btn like" onclick="swipe('right')" title="ถูกใจ">♥</button>
+      </div>
+
+      <p class="muted" style="text-align:center;font-size:13px">
+        💡 สามารถใช้ปุ่มลูกศร ← → บนคีย์บอร์ดได้
+      </p>
+    </div>
+
+    <div class="panel info-panel" id="sideInfo">
+      <h2>💌 คำแนะนำสำหรับเริ่มคุย</h2>
+      <p class="muted">เลือกโปรไฟล์เพื่อดูความเข้ากันได้และหัวข้อที่เหมาะสำหรับเริ่มบทสนทนา</p>
+    </div>
+
+  </div>
+</section>
+
+<section id="likes" class="page">
+  <h1>คนที่คุณกดถูกใจ ❤️</h1>
+  <p class="muted">รายการโปรไฟล์ที่คุณปัดขวา</p>
+  <div id="likesList"></div>
+</section>
+
+<section id="matches" class="page">
+  <h1>Your Matches 💕</h1>
+  <p class="muted">คนที่คุณและอีกฝ่ายกดถูกใจกันทั้งสองฝ่าย</p>
+  <div id="matchesList"></div>
+</section>
+
+</main>
+
+<div class="modal" id="mathModal">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('mathModal')">×</button>
+    <h2>📐 วิธีคิดทางคณิตศาสตร์</h2>
+    <div id="mathContent"></div>
+  </div>
+</div>
+
+<div class="modal" id="matchModal">
+  <div class="modal-box match-modal">
+    <button class="close-modal" onclick="closeModal('matchModal')">×</button>
+    <div class="match-title">It's a Match! 💕</div>
+    <p>คุณทั้งสองคนกดถูกใจกัน!</p>
+    <div class="match-faces" id="matchFaces">👩 💗 👨</div>
+    <h2 id="matchName"></h2>
+    <p id="matchScore"></p>
+    <div class="suggestion">
+      <strong>💬 ลองเริ่มคุยด้วยประโยคนี้</strong>
+      <p id="matchMessage"></p>
+    </div>
+    <button class="primary-btn" onclick="copyMatchMessage()">📋 คัดลอกประโยค</button>
+    <button class="secondary-btn" onclick="closeModal('matchModal')">ปัดต่อเลย 💕</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ==================================================
+// 1. ข้อมูลพื้นฐาน
+// ==================================================
+
+const categories = [
+  "การเข้าสังคม / ปาร์ตี้",
+  "การท่องเที่ยว / ผจญภัย",
+  "การวางแผนการเงิน / ออมเงิน",
+  "ความจริงจังกับการทำงาน",
+  "การดูแลสุขภาพ / ออกกำลังกาย"
+];
+
+const jobs = [
+  "นักเรียน/นักศึกษา",
+  "การแพทย์/สุขภาพ",
+  "วิศวกร/IT",
+  "การเงิน/บริหาร",
+  "ข้าราชการ/รัฐวิสาหกิจ",
+  "ธุรกิจส่วนตัว/Freelance",
+  "งานสร้างสรรค์/ศิลปะ"
+];
+
+const goals = [
+  "หาคู่ชีวิต",
+  "คุยศึกษานิสัย",
+  "เพื่อนเที่ยว/เพื่อนคุย"
+];
+
+// โปรไฟล์จำลอง 50 คน
+// [ชื่อ, เพศ, อายุ, เป้าหมาย, อาชีพ, ระยะทาง, คะแนน 5 ด้าน]
+
+const rawProfiles = [
+ ["ฟ้า","หญิง",23,0,1,4,[5,4,2,4,3]],
+ ["มายด์","หญิง",22,1,0,8,[3,5,3,2,5]],
+ ["เคท","หญิง",24,0,2,12,[1,2,5,4,5]],
+ ["แบม","หญิง",22,1,0,3,[4,5,2,3,4]],
+ ["เจน","หญิง",21,2,0,22,[5,5,1,1,2]],
+ ["พลอย","หญิง",25,0,4,18,[2,3,4,5,4]],
+ ["มุก","หญิง",26,0,3,35,[1,1,5,5,5]],
+ ["แพร","หญิง",23,1,6,6,[3,3,3,3,3]],
+ ["ออม","หญิง",27,2,5,14,[4,2,3,4,2]],
+ ["เนย","หญิง",22,1,0,9,[2,4,2,3,5]],
+ ["ต้น","ชาย",25,0,4,28,[1,1,5,5,1]],
+ ["นนท์","ชาย",26,1,2,5,[4,4,2,5,2]],
+ ["พีท","ชาย",22,2,0,2,[5,5,1,2,1]],
+ ["ก้อง","ชาย",24,0,1,11,[1,2,4,5,5]],
+ ["วิน","ชาย",29,0,3,16,[3,4,2,4,4]],
+ ["บอส","ชาย",23,2,0,7,[5,3,2,2,1]],
+ ["ท็อป","ชาย",27,1,2,25,[2,5,3,4,3]],
+ ["มาร์ค","ชาย",21,2,0,40,[4,5,1,1,4]],
+ ["แม็กซ์","ชาย",30,0,4,13,[1,1,5,5,3]],
+ ["โอ๊ต","ชาย",25,1,1,10,[3,2,4,3,5]],
+ ["น้ำ","หญิง",24,0,1,7,[4,3,3,4,4]],
+ ["ก้อย","หญิง",28,1,3,15,[2,2,5,5,3]],
+ ["เบลล์","หญิง",22,2,6,4,[5,5,1,2,2]],
+ ["ฝน","หญิง",26,0,4,20,[1,2,4,4,3]],
+ ["นิหน่า","หญิง",23,1,2,11,[3,4,3,4,4]],
+ ["วิว","หญิง",21,2,0,6,[5,4,1,1,3]],
+ ["ตาล","หญิง",27,0,5,9,[3,3,4,4,4]],
+ ["การ์ตูน","หญิง",22,1,0,13,[4,4,2,3,5]],
+ ["มิน","หญิง",25,2,6,19,[5,5,2,2,2]],
+ ["ปาล์ม","หญิง",29,0,3,30,[1,1,5,5,5]],
+ ["โบว์","หญิง",24,1,1,8,[2,3,3,4,5]],
+ ["ซิน","หญิง",22,2,0,5,[4,5,1,2,3]],
+ ["เดียร์","หญิง",26,0,2,16,[2,2,4,4,4]],
+ ["เอิร์ธ","ชาย",24,0,2,6,[3,4,4,4,3]],
+ ["ภูมิ","ชาย",27,1,5,12,[4,3,3,3,4]],
+ ["กรณ์","ชาย",25,2,6,14,[5,5,2,2,2]],
+ ["เต้","ชาย",28,0,3,22,[1,2,5,5,4]],
+ ["แทน","ชาย",23,1,0,3,[3,4,2,3,5]],
+ ["ดล","ชาย",26,0,4,17,[2,2,4,5,3]],
+ ["เจมส์","ชาย",22,2,0,9,[5,4,1,2,1]],
+ ["ปั๊บ","ชาย",29,0,1,24,[2,3,4,4,5]],
+ ["เบส","ชาย",21,1,0,4,[4,4,2,2,4]],
+ ["ไนท์","ชาย",25,2,2,11,[5,3,2,3,2]],
+ ["ภัทร","ชาย",31,0,3,33,[1,1,5,5,5]],
+ ["พี","ชาย",23,1,6,7,[3,5,2,3,3]],
+ ["คิม","ชาย",27,2,5,18,[4,3,3,4,2]],
+ ["โบ๊ท","ชาย",26,0,4,15,[2,2,4,4,3]],
+ ["ซัน","ชาย",22,1,0,8,[3,4,2,3,4]],
+ ["แซค","ชาย",28,2,2,21,[5,4,2,3,3]],
+ ["อาร์ม","ชาย",30,0,1,10,[2,3,4,5,5]]
+];
+
+// สถานะการกดถูกใจกลับ เป็นข้อมูลจำลอง
+// ไม่ใช้คะแนนความเข้ากันได้มาตัดสิน Match
+
+const profiles = rawProfiles.map((p, i) => ({
+  id: i + 1,
+  name: p[0],
+  gender: p[1],
+  age: p[2],
+  goal: goals[p[3]],
+  job: jobs[p[4]],
+  distance: p[5],
+  scores: p[6],
+  likedYou: ((i * 7 + 3) % 10) < 5
+}));
+
+// ==================================================
+// 2. State ของระบบ
+// ==================================================
+
+let candidates = [];
+let currentIndex = 0;
+let likedProfiles = [];
+let matchedProfiles = [];
+let skippedProfiles = [];
+let lastMatchMessage = "";
+
+let userVector = [3,3,3,3,3];
+let weights = [3,3,3,3,3];
+let useWeights = true;
+
+let dragStartX = 0;
+let dragCurrentX = 0;
+let isDragging = false;
+let toastTimer = null;
+
+// ==================================================
+// 3. สร้างแบบสอบถาม
+// ==================================================
+
+function initialize() {
+
+  const ownJob = document.getElementById("ownJob");
+  const targetJob = document.getElementById("targetJob");
+
+  targetJob.add(new Option("ไม่จำกัดอาชีพ", "ทั้งหมด"));
+
+  jobs.forEach(job => {
+    ownJob.add(new Option(job, job));
+    targetJob.add(new Option(job, job));
+  });
+
+  const questions = document.getElementById("questions");
+
+  categories.forEach((category, i) => {
+    questions.innerHTML += `
+      <div class="question">
+        <div class="question-title">
+          ${i + 1}. ${category}
+        </div>
+
+        <div class="question-sliders">
+          <div>
+            <div class="slider-label">
+              <span>คำตอบของคุณ</span>
+              <strong id="valueLabel${i}">3</strong>
+            </div>
+
+            <input
+              type="range"
+              id="value${i}"
+              min="1"
+              max="5"
+              value="3"
+              oninput="updateSlider(${i})"
+            >
+          </div>
+
+          <div>
+            <div class="slider-label">
+              <span>น้ำหนักความสำคัญ</span>
+              <strong id="weightLabel${i}">3</strong>
+            </div>
+
+            <input
+              type="range"
+              id="weight${i}"
+              min="1"
+              max="5"
+              value="3"
+              oninput="updateSlider(${i})"
+            >
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  startMatching(false);
+}
+
+function updateSlider(i) {
+  document.getElementById(`valueLabel${i}`).textContent =
+    document.getElementById(`value${i}`).value;
+
+  document.getElementById(`weightLabel${i}`).textContent =
+    document.getElementById(`weight${i}`).value;
+}
+
+function applyPreset(values, importance) {
+  values.forEach((value, i) => {
+    document.getElementById(`value${i}`).value = value;
+    document.getElementById(`weight${i}`).value = importance[i];
+    updateSlider(i);
+  });
+
+  showToast("เปลี่ยนสไตล์เรียบร้อยแล้ว ✨");
+}
+
+// ==================================================
+// 4. คำนวณความเข้ากันได้
+// ==================================================
+
+function calculateCompatibility(profile) {
+
+  const x = userVector;
+  const y = profile.scores;
+  const w = weights;
+
+  let weightedSquaredSum = 0;
+  let maxSquaredSum = 0;
+  let dotProduct = 0;
+  let normX = 0;
+  let normY = 0;
+
+  const details = [];
+
+  for (let i = 0; i < x.length; i++) {
+
+    const difference = x[i] - y[i];
+    const squaredDifference = difference ** 2;
+
+    const weightedDifference = w[i] * squaredDifference;
+
+    weightedSquaredSum += weightedDifference;
+
+    // ช่วงคะแนนแต่ละหัวข้อคือ 1 ถึง 5
+    // ผลต่างมากที่สุด = 4
+    // ผลต่างกำลังสองมากที่สุด = 16
+
+    maxSquaredSum += w[i] * 16;
+
+    dotProduct += w[i] * x[i] * y[i];
+
+    normX += w[i] * x[i] ** 2;
+    normY += w[i] * y[i] ** 2;
+
+    details.push({
+      category: categories[i],
+      x: x[i],
+      y: y[i],
+      w: w[i],
+      difference,
+      squaredDifference,
+      weightedDifference,
+      topicScore: 100 * (1 - Math.abs(difference) / 4)
+    });
+  }
+
+  const distance = Math.sqrt(weightedSquaredSum);
+  const maxDistance = Math.sqrt(maxSquaredSum);
+
+  // Euclidean Score: 100% = เวกเตอร์ตรงกันทุกด้าน
+
+  const euclideanScore =
+    100 * (1 - distance / maxDistance);
+
+  // Weighted Cosine Similarity
+
+  const cosine =
+    dotProduct / (Math.sqrt(normX) * Math.sqrt(normY));
+
+  const cosineScore = cosine * 100;
+
+  return {
+    ...profile,
+    euclideanScore: Number(euclideanScore.toFixed(2)),
+    cosineScore: Number(cosineScore.toFixed(2)),
+    distance,
+    maxDistance,
+    weightedSquaredSum,
+    maxSquaredSum,
+    dotProduct,
+    normX,
+    normY,
+    details
+  };
+}
+
+// ==================================================
+// 5. เลือกหัวข้อที่ตรงกันมากที่สุด
+// ==================================================
+
+function getBestTopic(profile) {
+
+  const sorted = [...profile.details].sort((a, b) => {
+
+    const diffA = Math.abs(a.difference);
+    const diffB = Math.abs(b.difference);
+
+    // เลือกผลต่างน้อยที่สุดก่อน
+    if (diffA !== diffB) {
+      return diffA - diffB;
+    }
+
+    // ถ้าผลต่างเท่ากัน เลือกหัวข้อสำคัญกว่า
+    return b.w - a.w;
+  });
+
+  return sorted[0];
+}
+
+function getConversationSuggestion(profile) {
+
+  const best = getBestTopic(profile);
+  const index = categories.indexOf(best.category);
+
+  const suggestions = [
+    [
+      "ปกติชอบออกไปเจอเพื่อนหรืออยู่บ้านมากกว่ากัน?",
+      "ถ้าได้เลือกไปทำกิจกรรมกับเพื่อนสุดสัปดาห์นี้ อยากทำอะไร?",
+      "มีร้านหรือที่แฮงเอาต์ที่ชอบเป็นพิเศษไหม?"
+    ],
+    [
+      "ถ้าได้เลือกไปเที่ยวที่ไหนก็ได้ตอนนี้ อยากไปที่ไหนที่สุด?",
+      "ชอบเที่ยวทะเลหรือภูเขามากกว่ากัน?",
+      "ทริปที่ประทับใจที่สุดของเธอคือที่ไหน?"
+    ],
+    [
+      "ถ้ามีงบสำหรับทำอะไรสนุก ๆ สักอย่าง อยากเอาไปทำอะไร?",
+      "เป็นสายเก็บเงินเพื่อเที่ยวหรือซื้อของที่อยากได้มากกว่ากัน?",
+      "มีอะไรที่กำลังเก็บเงินเพื่อซื้ออยู่ไหม?"
+    ],
+    [
+      "ช่วงนี้กำลังอินกับงานหรือโปรเจกต์อะไรเป็นพิเศษไหม?",
+      "ถ้าเลือกทำงานในฝันได้หนึ่งอย่าง อยากทำอะไร?",
+      "วันหยุดหลังจากทำงานเหนื่อย ๆ ชอบพักแบบไหน?"
+    ],
+    [
+      "ปกติชอบออกกำลังกายแบบไหน?",
+      "มีอาหารหรือกิจกรรมสุขภาพที่ชอบเป็นพิเศษไหม?",
+      "ถ้าต้องเลือกกิจกรรมวันหยุด จะเลือกเดินเล่นหรือออกกำลังกาย?"
+    ]
+  ];
+
+  // เลือกประโยคตามคะแนนเพื่อให้ผลคงที่
+  const choice = profile.id % suggestions[index].length;
+
+  return {
+    topic: best.category,
+    score: best.topicScore,
+    userAnswer: best.x,
+    partnerAnswer: best.y,
+    message: suggestions[index][choice]
+  };
+}
+
+// ==================================================
+// 6. กรองโปรไฟล์
+// ==================================================
+
+function startMatching(goToDiscover = true) {
+
+  const userAge = Number(document.getElementById("userAge").value);
+  const targetGender = document.getElementById("targetGender").value;
+  const ageDiff = Number(document.getElementById("ageDiff").value);
+  const maxDistance = Number(document.getElementById("maxDistance").value);
+  const targetJob = document.getElementById("targetJob").value;
+  const userGoal = document.getElementById("userGoal").value;
+
+  if (!Number.isFinite(userAge) || userAge < 18 || userAge > 80) {
+    showToast("กรุณาระบุอายุระหว่าง 18–80 ปี");
+    return;
+  }
+
+  userVector = categories.map((_, i) =>
+    Number(document.getElementById(`value${i}`).value)
+  );
+
+  useWeights = document.getElementById("useWeights").checked;
+
+  weights = categories.map((_, i) =>
+    useWeights
+      ? Number(document.getElementById(`weight${i}`).value)
+      : 1
+  );
+
+  const dealbreaker = document.getElementById("dealbreaker").checked;
+
+  const filtered = profiles.filter(profile => {
+
+    if (targetGender !== "ทั้งหมด" && profile.gender !== targetGender) {
+      return false;
+    }
+
+    if (Math.abs(profile.age - userAge) > ageDiff) {
+      return false;
+    }
+
+    if (profile.distance > maxDistance) {
+      return false;
+    }
+
+    if (targetJob !== "ทั้งหมด" && profile.job !== targetJob) {
+      return false;
+    }
+
+    if (userGoal !== "ทั้งหมด" && profile.goal !== userGoal) {
+      return false;
+    }
+
+    if (dealbreaker) {
+      for (let i = 0; i < categories.length; i++) {
+        const importance = Number(
+          document.getElementById(`weight${i}`).value
+        );
+
+        if (
+          importance === 5 &&
+          Math.abs(userVector[i] - profile.scores[i]) > 2
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  });
+
+  candidates = filtered
+    .map(calculateCompatibility)
+    .sort((a, b) => b.euclideanScore - a.euclideanScore);
+
+  currentIndex = 0;
+
+  // เริ่มรอบใหม่ แต่เก็บรายการถูกใจและ Match ไว้
+  renderCard();
+  updateStats();
+
+  if (goToDiscover) {
+    showPage("discover");
+    showToast(`พบ ${candidates.length} โปรไฟล์ที่ตรงเงื่อนไข 💕`);
+  }
+}
+
+// ==================================================
+// 7. แสดงอิโมจิตามเพศ
+// ==================================================
+
+function getAvatar(profile) {
+
+  const maleEmojis = [
+    "👨🏻", "👨🏽", "👨🏻‍🦱", "👨🏻‍💻",
+    "👨🏻‍🎓", "👨🏻‍🍳", "👨🏻‍⚕️"
+  ];
+
+  const femaleEmojis = [
+    "👩🏻", "👩🏽", "👩🏻‍🦱", "👩🏻‍💻",
+    "👩🏻‍🎓", "👩🏻‍🍳", "👩🏻‍⚕️"
+  ];
+
+  const emojis =
+    profile.gender === "ชาย" ? maleEmojis : femaleEmojis;
+
+  return emojis[(profile.id - 1) % emojis.length];
+}
+
+// ==================================================
+// 8. แสดงการ์ดสำหรับปัด
+// ==================================================
+
+function getCurrentProfile() {
+  return candidates[currentIndex] || null;
+}
+
+function renderCard() {
+
+  const deck = document.getElementById("deck");
+  const sideInfo = document.getElementById("sideInfo");
+
+  const profile = getCurrentProfile();
+
+  if (!profile) {
+
+    deck.innerHTML = `
+      <div class="panel empty" style="height:100%;display:grid;place-items:center">
+        <div>
+          <div style="font-size:70px">💗</div>
+          <h2>ดูครบแล้ว!</h2>
+          <p>ไม่มีโปรไฟล์เพิ่มเติมในเงื่อนไขนี้</p>
+          <button class="primary-btn" onclick="showPage('setup')">
+            เปลี่ยนเงื่อนไข
+          </button>
+        </div>
+      </div>
+    `;
+
+    sideInfo.innerHTML = `
+      <h2>✨ พร้อมค้นหาคนใหม่ไหม?</h2>
+      <p class="muted">กลับไปปรับเงื่อนไขหรือดูคนที่กดถูกใจได้เลย</p>
+    `;
+
+    return;
+  }
+
+  const avatar = getAvatar(profile);
+
+  deck.innerHTML = `
+    <div class="profile-card" id="activeCard">
+      <div class="card-art ${profile.gender === "ชาย" ? "male" : ""}">
+        <span>${avatar}</span>
+
+        <div class="score-bubble">
+          💗 ${profile.euclideanScore.toFixed(1)}%
+        </div>
+
+        <div class="swipe-stamp" id="likeStamp">LIKE ♥</div>
+        <div class="swipe-stamp nope" id="nopeStamp">NOPE ✕</div>
+      </div>
+
+      <div class="card-body">
+        <h2>${profile.name}, ${profile.age}</h2>
+
+        <div>
+          <span class="tag">📍 ${profile.distance} กม.</span>
+          <span class="tag">💼 ${profile.job}</span>
+          <span class="tag">💕 ${profile.goal}</span>
+        </div>
+
+        <p style="margin:12px 0 5px">
+          <strong>ความเข้ากันได้ ${profile.euclideanScore.toFixed(1)}%</strong>
+        </p>
+
+        <div class="compatibility-bar">
+          <div class="compatibility-fill"
+               style="width:${profile.euclideanScore}%"></div>
+        </div>
+
+        <p class="muted" style="font-size:13px">
+          Cosine Similarity: ${profile.cosineScore.toFixed(1)}%
+        </p>
+
+        <p class="muted" style="font-size:12px">
+          ${currentIndex + 1} / ${candidates.length} โปรไฟล์
+        </p>
+      </div>
+    </div>
+  `;
+
+  renderSideInfo(profile);
+  setupDrag();
+}
+
+function renderSideInfo(profile) {
+
+  const suggestion = getConversationSuggestion(profile);
+
+  document.getElementById("sideInfo").innerHTML = `
+    <h2>💌 คุยกับ ${profile.name} เรื่องอะไรดี?</h2>
+
+    <div class="suggestion">
+      <strong>✨ หัวข้อที่เข้ากันได้ดีที่สุด</strong>
+      <h3 style="margin-top:10px">${suggestion.topic}</h3>
+
+      <p>
+        คะแนนของคุณ: <b>${suggestion.userAnswer}/5</b><br>
+        คะแนนของ ${profile.name}: <b>${suggestion.partnerAnswer}/5</b>
+      </p>
+
+      <p>ความใกล้เคียงของหัวข้อ: <b>${suggestion.score.toFixed(0)}%</b></p>
+    </div>
+
+    <div class="suggestion">
+      <strong>💬 ประโยคแรกที่แนะนำ</strong>
+      <p style="font-size:17px">
+        “${suggestion.message}”
+      </p>
+
+      <button class="secondary-btn" onclick="copyText(${JSON.stringify(suggestion.message).replace(/"/g, '&quot;')})">
+        📋 คัดลอกประโยค
+      </button>
+    </div>
+
+    <p class="muted" style="font-size:13px">
+      ระบบเลือกหัวข้อที่ผลต่างคะแนนน้อยที่สุด
+      หากเสมอกันจะเลือกหัวข้อที่คุณให้ความสำคัญมากกว่า
+    </p>
+
+    <button class="secondary-btn full" onclick="openMath()">
+      📐 ดูวิธีคิดทางคณิตศาสตร์แบบละเอียด
+    </button>
+  `;
+}
+
+// ==================================================
+// 9. ระบบลากการ์ดซ้าย–ขวา
+// ==================================================
+
+function setupDrag() {
+
+  const card = document.getElementById("activeCard");
+
+  if (!card) return;
+
+  card.addEventListener("pointerdown", event => {
+
+    if (event.button !== 0) return;
+
+    isDragging = true;
+    dragStartX = event.clientX;
+    dragCurrentX = 0;
+
+    card.classList.add("dragging");
+
+    card.setPointerCapture(event.pointerId);
+  });
+
+  card.addEventListener("pointermove", event => {
+
+    if (!isDragging) return;
+
+    dragCurrentX = event.clientX - dragStartX;
+
+    const rotation = dragCurrentX / 18;
+
+    card.style.transform =
+      `translateX(${dragCurrentX}px) rotate(${rotation}deg)`;
+
+    const likeStamp = document.getElementById("likeStamp");
+    const nopeStamp = document.getElementById("nopeStamp");
+
+    if (likeStamp) {
+      likeStamp.style.opacity =
+        dragCurrentX > 0 ? Math.min(dragCurrentX / 90, 1) : 0;
+    }
+
+    if (nopeStamp) {
+      nopeStamp.style.opacity =
+        dragCurrentX < 0 ? Math.min(-dragCurrentX / 90, 1) : 0;
+    }
+  });
+
+  card.addEventListener("pointerup", () => {
+
+    if (!isDragging) return;
+
+    isDragging = false;
+    card.classList.remove("dragging");
+
+    if (dragCurrentX > 100) {
+      swipe("right");
+    } else if (dragCurrentX < -100) {
+      swipe("left");
+    } else {
+      card.style.transform = "";
+
+      document.getElementById("likeStamp").style.opacity = 0;
+      document.getElementById("nopeStamp").style.opacity = 0;
+    }
+  });
+
+  card.addEventListener("pointercancel", () => {
+    isDragging = false;
+    card.classList.remove("dragging");
+    card.style.transform = "";
+  });
+}
+
+// ==================================================
+// 10. ระบบปัดและ Match
+// ==================================================
+
+function swipe(direction) {
+
+  const profile = getCurrentProfile();
+  if (!profile) return;
+
+  const card = document.getElementById("activeCard");
+
+  if (card) {
+    card.style.transition = "transform .28s ease, opacity .28s ease";
+    card.style.transform =
+      direction === "right"
+        ? "translateX(700px) rotate(25deg)"
+        : "translateX(-700px) rotate(-25deg)";
+    card.style.opacity = "0";
+  }
+
+  if (direction === "right") {
+
+    if (!likedProfiles.some(p => p.id === profile.id)) {
+      likedProfiles.push(profile);
+    }
+
+    // Match เกิดขึ้นเมื่อทั้งสองฝ่ายกดถูกใจ
+    // likedYou เป็นสถานะจำลองที่กำหนดไว้ในฐานข้อมูล
+
+    if (profile.likedYou) {
+
+      if (!matchedProfiles.some(p => p.id === profile.id)) {
+        matchedProfiles.push(profile);
+      }
+
+      setTimeout(() => {
+        showMatchModal(profile);
+      }, 330);
+
+    } else {
+      showToast(`ส่งหัวใจให้ ${profile.name} แล้ว 💗`);
+    }
+
+  } else {
+
+    if (!skippedProfiles.some(p => p.id === profile.id)) {
+      skippedProfiles.push(profile);
+    }
+  }
+
+  currentIndex++;
+
+  updateStats();
+
+  setTimeout(() => {
+    renderCard();
+  }, 300);
+}
+
+function showMatchModal(profile) {
+
+  const suggestion = getConversationSuggestion(profile);
+
+  lastMatchMessage = suggestion.message;
+
+  const yourGender = document.getElementById("userGender").value;
+
+  const yourEmoji = yourGender === "ชาย" ? "👨🏻" : "👩🏻";
+
+  document.getElementById("matchFaces").textContent =
+    `${yourEmoji} 💗 ${getAvatar(profile)}`;
+
+  document.getElementById("matchName").textContent =
+    `คุณกับ ${profile.name} ถูกใจกัน!`;
+
+  document.getElementById("matchScore").textContent =
+    `คะแนนความเข้ากันได้ ${profile.euclideanScore.toFixed(1)}%`;
+
+  document.getElementById("matchMessage").textContent =
+    suggestion.message;
+
+  document.getElementById("matchModal").classList.add("show");
+}
+
+function copyMatchMessage() {
+  copyText(lastMatchMessage);
+}
+
+function updateStats() {
+
+  document.getElementById("countCandidates").textContent =
+    candidates.length;
+
+  document.getElementById("countLikes").textContent =
+    likedProfiles.length;
+
+  document.getElementById("countMatches").textContent =
+    matchedProfiles.length;
+}
+
+// ==================================================
+// 11. แสดงรายละเอียดสูตรคณิตศาสตร์
+// ==================================================
+
+function openMath() {
+
+  const profile = getCurrentProfile();
+
+  if (!profile) {
+    showToast("ไม่มีโปรไฟล์ให้แสดงวิธีคำนวณ");
+    return;
+  }
+
+  const d = profile.details;
+
+  const tableRows = d.map((item, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${item.x}</td>
+      <td>${item.y}</td>
+      <td>${item.w}</td>
+      <td>${item.difference}</td>
+      <td>${item.squaredDifference}</td>
+      <td>${item.weightedDifference}</td>
+    </tr>
+  `).join("");
+
+  const euclideanTerms = d.map(item =>
+    `${item.w}×(${item.x}-${item.y})²`
+  ).join(" + ");
+
+  const numericTerms = d.map(item =>
+    `${item.w}×${item.squaredDifference}`
+  ).join(" + ");
+
+  const dotTerms = d.map(item =>
+    `${item.w}×${item.x}×${item.y}`
+  ).join(" + ");
+
+  const normXTerms = d.map(item =>
+    `${item.w}×${item.x}²`
+  ).join(" + ");
+
+  const normYTerms = d.map(item =>
+    `${item.w}×${item.y}²`
+  ).join(" + ");
+
+  const suggestion = getConversationSuggestion(profile);
+
+  document.getElementById("mathContent").innerHTML = `
+
+    <p>
+      เปรียบเทียบข้อมูลของคุณกับ
+      <strong>${profile.name}</strong>
+    </p>
+
+    <h3>ขั้นตอนที่ 1: แปลงคำตอบเป็นเวกเตอร์</h3>
+
+    <div class="formula">เวกเตอร์ของคุณ X = [${userVector.join(", ")}]
+เวกเตอร์ของ ${profile.name} Y = [${profile.scores.join(", ")}]
+เวกเตอร์น้ำหนัก W = [${weights.join(", ")}]</div>
+
+    <p class="muted">
+      เวกเตอร์แต่ละตำแหน่งแทนคะแนนไลฟ์สไตล์หนึ่งหัวข้อ
+      โดยมีค่าตั้งแต่ 1 ถึง 5
+    </p>
+
+    <h3>ขั้นตอนที่ 2: หาผลต่างและยกกำลังสอง</h3>
+
+    <div class="table-scroll">
+      <table class="math-table">
+        <thead>
+          <tr>
+            <th>หัวข้อ</th>
+            <th>X</th>
+            <th>Y</th>
+            <th>W</th>
+            <th>X−Y</th>
+            <th>(X−Y)²</th>
+            <th>W(X−Y)²</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    </div>
+
+    <h3>ขั้นตอนที่ 3: Weighted Euclidean Distance</h3>
+
+    <p>สูตร:</p>
+
+    <div class="formula">D(X,Y) = √[Σ wi(xi−yi)²]</div>
+
+    <p>แทนค่า:</p>
+
+    <div class="formula">D = √[${euclideanTerms}]</div>
+
+    <p>คำนวณผลต่างกำลังสอง:</p>
+
+    <div class="formula">D = √[${numericTerms}]
+
+D = √${profile.weightedSquaredSum}
+
+D = ${profile.distance.toFixed(4)}</div>
+
+    <h3>ขั้นตอนที่ 4: แปลงระยะทางเป็นเปอร์เซ็นต์</h3>
+
+    <p>
+      เนื่องจากคำตอบมีค่าตั้งแต่ 1–5
+      ผลต่างสูงสุดของแต่ละหัวข้อเท่ากับ 4
+      และผลต่างกำลังสองสูงสุดเท่ากับ 16
+    </p>
+
+    <div class="formula">Dmax = √[16 × Σwi]
+
+Dmax = √${profile.maxSquaredSum}
+
+Dmax = ${profile.maxDistance.toFixed(4)}</div>
+
+    <p>สูตรคะแนนความเข้ากันได้:</p>
+
+    <div class="formula">Score = [1 − (D / Dmax)] × 100
+
+= [1 − (${profile.distance.toFixed(4)} / ${profile.maxDistance.toFixed(4)})] × 100
+
+= ${profile.euclideanScore.toFixed(2)}%</div>
+
+    <p>
+      <strong>ผลลัพธ์:</strong>
+      คะแนนยิ่งสูง แสดงว่าคำตอบไลฟ์สไตล์ยิ่งใกล้เคียงกัน
+      โดย 100% หมายถึงคำตอบตรงกันทุกหัวข้อ
+    </p>
+
+    <h3>ขั้นตอนที่ 5: Weighted Cosine Similarity</h3>
+
+    <p>สูตร:</p>
+
+    <div class="formula">Cos(X,Y) = Σ(wi xi yi) /
+[√Σ(wi xi²) × √Σ(wi yi²)]</div>
+
+    <p>หาผลคูณเชิงจุด (Dot Product):</p>
+
+    <div class="formula">Dot = ${dotTerms}
+
+Dot = ${profile.dotProduct}</div>
+
+    <p>หาขนาดเวกเตอร์:</p>
+
+    <div class="formula">||X||² = ${normXTerms}
+= ${profile.normX}
+
+||Y||² = ${normYTerms}
+= ${profile.normY}</div>
+
+    <p>แทนค่าในสูตร:</p>
+
+    <div class="formula">Cos = ${profile.dotProduct} /
+(√${profile.normX} × √${profile.normY})
+
+Cos = ${(profile.cosineScore / 100).toFixed(6)}
+
+Cosine Similarity = ${profile.cosineScore.toFixed(2)}%</div>
+
+    <p class="muted">
+      Cosine Similarity วัดความคล้ายคลึงของทิศทางเวกเตอร์
+      ส่วน Euclidean Distance วัดความห่างของคะแนนโดยตรง
+      จึงสามารถได้คะแนนสูงต่างกัน แม้ใช้ข้อมูลชุดเดียวกัน
+    </p>
+
+    <h3>ขั้นตอนที่ 6: เลือกหัวข้อสำหรับเริ่มบทสนทนา</h3>
+
+    <div class="formula">Topic Score = [1 − |Xi − Yi| / 4] × 100</div>
+
+    <p>
+      เลือกหัวข้อที่มี |Xi − Yi| น้อยที่สุด
+      หากมีหลายหัวข้อเท่ากัน
+      จะเลือกหัวข้อที่มีน้ำหนักความสำคัญมากกว่า
+    </p>
+
+    <div class="suggestion">
+      <strong>หัวข้อที่ตรงกันมากที่สุด:</strong>
+      ${suggestion.topic}
+
+      <p>
+        คุณให้ ${suggestion.userAnswer}/5
+        และ ${profile.name} ให้ ${suggestion.partnerAnswer}/5
+      </p>
+
+      <p>
+        ความใกล้เคียง:
+        <b>${suggestion.score.toFixed(0)}%</b>
+      </p>
+
+      <strong>ประโยคแนะนำ:</strong>
+      <p>“${suggestion.message}”</p>
+    </div>
+
+    <h3>กราฟเปรียบเทียบคะแนนรายหัวข้อ</h3>
+
+    <div style="max-width:480px;margin:auto">
+      <canvas id="radarChart"></canvas>
+    </div>
+
+    <p class="muted" style="font-size:12px">
+      หมายเหตุ: คะแนนเหล่านี้เป็นค่าความคล้ายคลึงที่นิยามขึ้นในระบบ
+      ไม่ใช่ความน่าจะเป็นที่ความสัมพันธ์จะสำเร็จ
+    </p>
+  `;
+
+  document.getElementById("mathModal").classList.add("show");
+
+  renderRadarChart(profile);
+}
+
+let radarChartInstance = null;
+
+function renderRadarChart(profile) {
+
+  if (typeof Chart === "undefined") {
+    return;
+  }
+
+  if (radarChartInstance) {
+    radarChartInstance.destroy();
+    radarChartInstance = null;
+  }
+
+  const canvas = document.getElementById("radarChart");
+
+  if (!canvas) return;
+
+  radarChartInstance = new Chart(canvas, {
+    type: "radar",
+    data: {
+      labels: [
+        "เข้าสังคม",
+        "ท่องเที่ยว",
+        "การเงิน",
+        "การทำงาน",
+        "สุขภาพ"
+      ],
+      datasets: [
+        {
+          label: "คุณ",
+          data: userVector,
+          borderColor: "#f43f85",
+          backgroundColor: "rgba(244,63,133,.15)",
+          pointBackgroundColor: "#f43f85"
+        },
+        {
+          label: profile.name,
+          data: profile.scores,
+          borderColor: "#6366f1",
+          backgroundColor: "rgba(99,102,241,.12)",
+          pointBackgroundColor: "#6366f1"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0,
+          max: 5,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
+
+// ==================================================
+// 12. รายการถูกใจและ Matches
+// ==================================================
+
+function renderLikes() {
+
+  const container = document.getElementById("likesList");
+
+  if (likedProfiles.length === 0) {
+    container.innerHTML = `
+      <div class="panel empty">
+        <div style="font-size:55px">💌</div>
+        <h2>ยังไม่มีคนที่ถูกใจ</h2>
+        <p>ลองไปปัดขวาให้คนที่สนใจก่อนนะ</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = likedProfiles.map(profile => `
+    <div class="list-card">
+      <div class="list-card-top">
+        <div class="avatar ${profile.gender === "ชาย" ? "male" : ""}">
+          ${getAvatar(profile)}
+        </div>
+
+        <div style="flex:1">
+          <h3>${profile.name}, ${profile.age}</h3>
+          <div class="muted" style="font-size:13px">
+            ${profile.job} · ${profile.distance} กม.
+          </div>
+          <strong style="color:var(--pink)">
+            💗 ${profile.euclideanScore.toFixed(1)}%
+          </strong>
+        </div>
+      </div>
+
+      <p class="muted">
+        ${matchedProfiles.some(p => p.id === profile.id)
+          ? "💕 Match แล้ว"
+          : "⏳ คุณกดถูกใจแล้ว แต่ยังไม่ Match"}
+      </p>
+
+      <button class="secondary-btn" onclick="removeLike(${profile.id})">
+        ยกเลิกถูกใจ
+      </button>
+    </div>
+  `).join("");
+}
+
+function renderMatches() {
+
+  const container = document.getElementById("matchesList");
+
+  if (matchedProfiles.length === 0) {
+    container.innerHTML = `
+      <div class="panel empty">
+        <div style="font-size:55px">💔</div>
+        <h2>ยังไม่มี Match</h2>
+        <p>ลองปัดขวาให้คนที่สนใจดูนะ</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = matchedProfiles.map(profile => {
+
+    const suggestion = getConversationSuggestion(profile);
+
+    return `
+      <div class="list-card">
+        <div class="list-card-top">
+          <div class="avatar ${profile.gender === "ชาย" ? "male" : ""}">
+            ${getAvatar(profile)}
+          </div>
+
+          <div>
+            <h3>${profile.name}, ${profile.age} 💕</h3>
+            <div class="muted">
+              ${profile.job} · ${profile.distance} กม.
+            </div>
+            <strong style="color:var(--pink)">
+              ความเข้ากันได้ ${profile.euclideanScore.toFixed(1)}%
+            </strong>
+          </div>
+        </div>
+
+        <div class="suggestion">
+          <strong>💬 ชวนคุยเรื่อง ${suggestion.topic}</strong>
+          <p>“${suggestion.message}”</p>
+          <button class="secondary-btn" onclick="copySuggestionById(${profile.id})">
+            📋 คัดลอกประโยค
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function removeLike(id) {
+
+  likedProfiles = likedProfiles.filter(p => p.id !== id);
+  matchedProfiles = matchedProfiles.filter(p => p.id !== id);
+
+  renderLikes();
+  renderMatches();
+  updateStats();
+
+  showToast("ยกเลิกถูกใจแล้ว");
+}
+
+function copySuggestionById(id) {
+
+  const profile = matchedProfiles.find(p => p.id === id);
+
+  if (!profile) return;
+
+  copyText(getConversationSuggestion(profile).message);
+}
+
+// ==================================================
+// 13. ระบบเปลี่ยนหน้า
+// ==================================================
+
+function showPage(pageId) {
+
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  document.getElementById(pageId).classList.add("active");
+
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === pageId
+    );
+  });
+
+  if (pageId === "likes") {
+    renderLikes();
+  }
+
+  if (pageId === "matches") {
+    renderMatches();
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ==================================================
+// 14. Modal / Toast / Copy
+// ==================================================
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove("show");
+}
+
+function showToast(message) {
+
+  const toast = document.getElementById("toast");
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2400);
+}
+
+async function copyText(text) {
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("คัดลอกประโยคแล้ว 📋");
+  } catch (error) {
+
+    // Fallback สำหรับบางเบราว์เซอร์
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    const success = document.execCommand("copy");
+    textarea.remove();
+
+    showToast(
+      success
+        ? "คัดลอกประโยคแล้ว 📋"
+        : "ไม่สามารถคัดลอกอัตโนมัติได้"
+    );
+  }
+}
+
+// ปิด Modal เมื่อกดพื้นที่ด้านนอก
+
+document.querySelectorAll(".modal").forEach(modal => {
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      modal.classList.remove("show");
+    }
+  });
+});
+
+// ควบคุมด้วยคีย์บอร์ด
+
+document.addEventListener("keydown", event => {
+
+  if (event.key === "Escape") {
+    closeModal("mathModal");
+    closeModal("matchModal");
+    return;
+  }
+
+  const isDiscover =
+    document.getElementById("discover").classList.contains("active");
+
+  const modalOpen =
+    document.querySelector(".modal.show") !== null;
+
+  if (!isDiscover || modalOpen) return;
+
+  if (event.key === "ArrowRight") {
+    swipe("right");
+  }
+
+  if (event.key === "ArrowLeft") {
+    swipe("left");
+  }
+});
+
+// ==================================================
+// 15. เริ่มทำงาน
+// ==================================================
+
+initialize();
+
+</script>
+</body>
+</html>
